@@ -21,11 +21,11 @@ padding-left:10px;
 <b>Sorted by: latest</b>
 
 {% for i in range(orders | length) %}
-<h4><a href={{url_for('events.order_complete', event_id = orders[i].event_id , order_id = orders[i].id)}}>
+<li><a href={{url_for('events.order_complete', event_id = orders[i].event_id , order_id = orders[i].id)}}>
 
   {{i+1}}. {{orders[i].events.event}} : {{orders[i].tickets.ticket_name}} x {{orders[i].ticket_quantity}}
 </a>
-</h4>
+</li>
 {% endfor %}
 
 {% endif %}

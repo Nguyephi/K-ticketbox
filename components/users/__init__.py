@@ -3,38 +3,40 @@ from flask import Flask, request, render_template, abort, redirect, url_for, fla
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, distinct
 from flask_migrate import Migrate
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, ValidationError, TextField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, InputRequired
 from flask_bootstrap import Bootstrap
-from models.Models import db, Users, Rating_users, login_manager, Events, Orders
+from models.Models import db, Users, Rating_users, login_manager, Events, Orders, Tickets
 from components.users.forms.forms import RegistrationForm, LoginForm, UpdateProfile
 
 # login_manager.login_view = 'login'
 
 
-
 users_blueprint = Blueprint('users', __name__,
                             template_folder='templates')
 
-@users_blueprint.route('/signup', methods=['post','get'])
+
+@users_blueprint.route('/signup', methods=['post', 'get'])
 def signup():
     form = RegistrationForm()
     if form.validate_on_submit():
-        new_user = Users(username=form.username.data, email=form.email.data, phone=form.phone.data, password=form.password.data, name=form.name.data )
+        new_user = Users(username=form.username.data, email=form.email.data,
+                         phone=form.phone.data, password=form.password.data, name=form.name.data)
         new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
-        return redirect ('/')
+        return redirect('/')
     return render_template('signup.html', form=form)
 
-@users_blueprint.route('/login', methods=['post','get'])
+
+@users_blueprint.route('/login', methods=['post', 'get'])
 def login():
     form = LoginForm()
-    if form.validate_on_submit():        
+    if form.validate_on_submit():
         log_user = Users.query.filter_by(username=form.username.data).first()
         if log_user is None:
             return redirect(url_for('users.signup'))
@@ -42,7 +44,6 @@ def login():
             return redirect(url_for('users.login'))
 
         login_user(log_user)
-
         return redirect('../events')
     return render_template('login.html', form=form)
 
@@ -50,12 +51,15 @@ def login():
 @users_blueprint.route('/logout')
 def logout():
     logout_user()
-    return redirect('../')
+    return redirect(url_for('events.view_events'))
+
 
 @users_blueprint.route('/vote/<target_id>/<rating>/<event_id>')
-def voteuser(target_id,rating,event_id): 
-    check_user_rating = Rating_users.query.filter_by(rater_id=current_user.id, target_user_id = target_id).first()
-    if not check_user_rating :    
+@login_required
+def voteuser(target_id, rating, event_id):
+    check_user_rating = Rating_users.query.filter_by(
+        rater_id=current_user.id, target_user_id=target_id).first()
+    if not check_user_rating:
         user_1 = Users.query.filter_by(id=current_user.id).first()
         user_2 = Users.query.filter_by(id=target_id).first()
 
@@ -69,43 +73,56 @@ def voteuser(target_id,rating,event_id):
 
     return redirect(url_for('events.view_event', event_id=event_id))
 
+
 @users_blueprint.route('/whovoteme')
+@login_required
 def showvoteme():
     user_1 = Users.query.filter_by(id=1).first()
     print("&^*&^%*ABJSGAKJSGAJSAS", user_1)
     print("&^*&^%*ABJSGAKJSGAJSAS", user_1.rater_id[0].fro.username)
     return user_1.rater_id[0].fro.username
-    
+
 
 @users_blueprint.route('/voted')
+@login_required
 def showvoted():
     user_1 = Users.query.filter_by(id=2).first()
     print("&^*&^%*ABJSGAKJSGAJSAS", user_1)
     print("&^*&^%*ABJSGAKJSGAJSAS", user_1.target_user_id[0].to.username)
     return user_1.target_user_id[0].to.username
-    
 
 
 @users_blueprint.route('/dashboard')
+@login_required
 def renderDashboard():
     return render_template('dashboard_welcome.html')
 
+
 @users_blueprint.route('/dashboard/profile')
+@login_required
 def dashboardProfile():
     user = Users.query.filter_by(id=current_user.id).first()
     return render_template('dashboard_profile.html', user=user)
 
+
 @users_blueprint.route('/dashboard/ordershistory')
+@login_required
 def dashboardOrders():
-    orders = Orders.query.filter_by(user_id=current_user.id).order_by(Orders.id.desc()).all()
+    orders = Orders.query.filter_by(
+        user_id=current_user.id).order_by(Orders.id.desc()).all()
     return render_template('dashboard_orders.html', orders=orders)
 
+
 @users_blueprint.route('/dashboard/eventshosted')
+@login_required
 def dashboardEvents():
-    events = Events.query.filter_by(user_id=current_user.id, isDelete=False).order_by(Events.id.desc()).all()
+    events = Events.query.filter_by(
+        user_id=current_user.id, isDelete=False).order_by(Events.id.desc()).all()
     return render_template('dashboard_events.html', events=events)
 
-@users_blueprint.route('/dashboard/updateprofile', methods=['post','get'])
+
+@users_blueprint.route('/dashboard/updateprofile', methods=['post', 'get'])
+@login_required
 def updateProfile():
     user = Users.query.filter_by(id=current_user.id).first()
     form = UpdateProfile()
@@ -128,10 +145,26 @@ def updateProfile():
         return render_template('dashboard_profile.html', user=user)
     return render_template('dashboard_updateprofile.html', user=user, form=form)
 
+
 @users_blueprint.route('/dashboard/seller')
+@login_required
 def dashboard_seller():
-    return render_template('dashboard_seller.html')
+    items_by_orders = Orders.query.join(Orders.events).filter(
+        Events.user_id == current_user.id).all()
+
+    total_tickets_sold = Orders.query.join(Orders.events).with_entities(func.sum(
+        Orders.ticket_quantity).label('total_tickets')).filter(Events.user_id == current_user.id).first()[0]
+        
+    total_revenue = Orders.query.join(Orders.events).with_entities(func.sum(
+        Orders.bill_amount).label('total_revenue')).filter(Events.user_id == current_user.id).first()[0]
+
+    items_by_events = Orders.query.join(Orders.events).with_entities(
+        func.sum(Orders.bill_amount).label('total_amount'),
+        func.sum(Orders.ticket_quantity).label('total_tickets'),
+        Events.event).filter(Events.user_id == current_user.id).group_by(Events.event).all()
+
+    return render_template('dashboard_seller.html', items_by_orders=items_by_orders, total_tickets_sold=total_tickets_sold, total_revenue=total_revenue, items_by_events=items_by_events)
 
 
-## user => all ticket sold:
-## from orders => filter Orders.events.user_id == current_user.id  >sum(ticket_quantity) or sum(bill_amount)
+# user => all ticket sold:
+# from orders => filter Orders.events.user_id == current_user.id  >sum(ticket_quantity) or sum(bill_amount)

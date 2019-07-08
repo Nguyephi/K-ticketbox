@@ -1,0 +1,57 @@
+{% extends 'dashboard_base.html' %}
+{% block content %}
+
+<div style="
+/* box-shadow: 1em;
+border: 1px solid grey;
+border-radius: 20px; */
+min-height: 50vh;
+padding-top:5px;
+padding-left:10px;
+">
+
+<div>
+ {% if total_tickets_sold == None %}
+ You have no revenue.
+ {% else %} 
+<h4>Total tickets sold: {{ "{:,.0f}".format(total_tickets_sold) }}  
+  <br>Revenue: {{ "VND {:,.0f}".format(total_revenue) }}
+
+</h4>
+
+</div>
+<br/>
+<div>
+  <h4>By orders:</h4>
+{% for item in items_by_orders %}
+<li>
+  <b>#{{item.id}}  - Event: {{item.events.event}}</b><br>
+  {{item.tickets.ticket_name}} x {{item.ticket_quantity}} = Bill amount: {{"VND {:,.0f}".format(item.bill_amount)}}<br>
+</li>
+{% endfor %}
+</div>
+<br/>
+
+<div>
+    <h4>By events:</h4>
+  {% for item in items_by_events %}
+  <li>
+<b>{{item.event}}</b><br>
+Tickets sold: {{item.total_tickets}}  &nbsp
+Revenue: {{"VND {:,.0f}".format(item.total_amount)}}<br/>
+  </li>
+  {% endfor %}
+  {% endif %} 
+  </div>
+
+
+
+
+
+
+
+</div>
+
+
+
+{% endblock %}

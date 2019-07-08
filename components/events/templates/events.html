@@ -61,13 +61,14 @@
         {% if not group[i][0] %}
         {% else %}
 
-        <p class="card-text" style="width: 100%; text-align: center; margin-right:1rem"><b>
+        <p class="card-text" style="width: 100%; text-align: center; margin-right:1rem">
+          <b>
             {% if group[i][0]-group[i][1] == 0 %}
-            TICKETS SOLD OUT!
+            <span style="color:red">TICKETS SOLD OUT!</span>
             {% else %}
             Tickets left: {{group[i][0]-group[i][1]}}
+            {%endif%}
           </b></p>
-        {%endif%}
         {% endif %}
         <div class="card shadow rounded"
           style="justify-content:center; width: 12rem; height:10rem; text-align: center; margin-top:1rem; margin-right:1rem">

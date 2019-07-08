@@ -1,11 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
+
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, ValidationError, TextField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, InputRequired
 from werkzeug.security import generate_password_hash, check_password_hash
-
 
 
 db = SQLAlchemy()
@@ -18,10 +18,10 @@ login_manager.login_view = 'users.login'
 def load_user(user_id):
     return Users.query.get(user_id)
 
+
 class Rating_users (db.Model):
     __tablename__ = 'rating_users'
-    rater_id = db.Column(db.Integer, db.ForeignKey(
-        'users.id'), primary_key=True)
+    rater_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     target_user_id = db.Column(
         db.Integer, db.ForeignKey('users.id'), primary_key=True)
     rating = db.Column(db.Integer, nullable=False)
@@ -35,7 +35,7 @@ class Users (UserMixin, db.Model):
     email = db.Column(db.String(255), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False, unique=False)
     phone = db.Column(db.String(255), nullable=False, unique=True)
-    avatar_url = db.Column(db.String, default=None)
+    avatar_url = db.Column(db.String, default="https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortCurly&accessoriesType=Prescription01&hairColor=BrownDark&facialHairType=Blank&clotheType=Hoodie&clotheColor=Gray01&eyeType=Default&eyebrowType=RaisedExcited&mouthType=Twinkle&skinColor=Yellow")
     description = db.Column(db.String)
     birthday = db.Column(db.Date)
     gender = db.Column(db.String)
@@ -84,11 +84,12 @@ class Events (db.Model):
     description = db.Column(db.String, nullable=False)
     count_click = db.Column(db.Integer, nullable=False, default=0)
 
-    count_rating =  db.Column(db.Integer, nullable=False, default=0)
-    avg_rating =db.Column(db.Float, nullable=False, default=0)
-    
+    count_rating = db.Column(db.Integer, nullable=False, default=0)
+    avg_rating = db.Column(db.Float, nullable=False, default=0)
+
     isprivate = db.Column(db.Boolean, default=False)
     isDelete = db.Column(db.Boolean, default=False)
+
 
 class Tickets (db.Model):
     __tablename__ = 'tickets'
@@ -113,14 +114,16 @@ class Orders (db.Model):
     ticket_id = db.Column(
         db.Integer,  db.ForeignKey('tickets.id'), nullable=False)
     tickets = db.relationship('Tickets', backref=db.backref("tickets1"))
-    
+
     ticket_quantity = db.Column(db.Integer, nullable=False)
     bill_amount = db.Column(db.Float, nullable=False)
+
 
 class Tags (db.Model):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
     tag = db.Column(db.String, nullable=False)
+
 
 class Jointag (db.Model):
     __tablename__ = 'jointag'
@@ -131,16 +134,6 @@ class Jointag (db.Model):
     event_id = db.Column(
         db.Integer,  db.ForeignKey('events.id'), nullable=False)
     events = db.relationship('Events', backref=db.backref("from_jointag"))
-
-
-
-
-
-
-
-
-
-
 
 
 class All_tickets (db.Model):
@@ -169,4 +162,3 @@ class All_tickets (db.Model):
     time_purchased = db.Column(db.DateTime, nullable=False)
     time_checkin = db.Column(
         db.DateTime, default=None)
-        

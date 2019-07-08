@@ -21,6 +21,7 @@ from flask_wtf.csrf import CsrfProtect
 
 
 app = Flask(__name__)
+
 app.config['SECRET_KEY'] = '9OLWxND4o83j4K4iuopO'
 CsrfProtect(app)
 db.init_app(app)

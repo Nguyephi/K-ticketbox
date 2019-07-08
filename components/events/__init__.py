@@ -53,7 +53,7 @@ def create_event():
 
 @events_blueprint.route('/')
 def view_events(): 
-    events = Events.query.with_entities(Events).filter(Events.start > datetime.now(),Events.isDelete==False).order_by(Events.start.asc()).all()
+    events = Events.query.with_entities(Events).filter(Events.start > datetime.now(),Events.isDelete==False).order_by(Events.avg_rating.desc()).all()
     group = [(Tickets.query.with_entities(func.sum(Tickets.stocks).label(  # total ticket
         'total')).filter(Tickets.event_id == i.id).first()[0],
         All_tickets.query.filter_by(event_id=i.id).count())  # sold
@@ -88,7 +88,7 @@ def edit_event(event_id):
     form.event.data = event.event
     form.description.data = event.description
     form.start.data = event.start
-    form.end.data = event.end
+
     form.img_url.data = event.img_url
     form.location.data = event.location
     form.tags.choices=group_list
@@ -304,9 +304,5 @@ def order_complete(event_id, order_id):
     tickets = All_tickets.query.filter_by(orders_id=order_id).all()
     return render_template('order_complete.html', order=order, s=s, tickets=tickets)
 
-    # ticket = Tickets.query.filter_by(event_id=event_id).order_by(Tickets.ticket_price,asc()).first()
-    # tickets = Tickets.query.filter_by(event_id=event_id).all()
 
-@events_blueprint.route('/handletag/<event_id>/<tag_id>', methods=['post', 'get'])
-def handle_tags(event_id, tag_id):
-  return 
+
