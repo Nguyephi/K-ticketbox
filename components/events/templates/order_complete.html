@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+
+<div class="card shadow mb-5 bg-white rounded">
+  <div class="card-body">
+    <h1>Receipt</h1> 
+    <br/> 
+    <h3>Customer: {{order.users.name}}</h3>
+    <h3>Event : {{order.events.event}}</h3>
+    <h3>Items:<br/>
+{{ order.tickets.ticket_name}} ({{"per item : VND {:,.2f}".format(order.tickets.ticket_price)}})   x   {{order.ticket_quantity}} =  Total: {{ "VND {:,.2f}".format(order.bill_amount) }}</h3>
+
+<br/>
+Your ticket(s):
+{% for i in range( tickets | length ) %}
+<div class="card-body">
+    <h4 style="font-weight: 600">{{i+1}}  -  Event: {{order.events.event}} </h4>
+  <h4 style="font-style:italic">Ticket type: {{tickets[i].tickets.ticket_name}} -  QRcode <img class="card-img-top" src={{qrcode(tickets[i].code)}} alt="Card image cap" style="width:100px; height:100px">   </h4>
+</div>  
+{% endfor %}
+  </div>
+</div>
+{% endblock %}

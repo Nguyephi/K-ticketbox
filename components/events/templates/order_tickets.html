@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+{% block content %}
+
+<div style="padding:20px">
+  </div>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+      <div class="alert alert-danger" role="alert">
+          {{ messages[0] }}
+      </div>
+  {% endif %}
+  {% endwith %}
+
+<div class="card shadow mb-5 bg-white rounded">
+  <!-- <img class="card-img-top" src="" alt="Card image cap"> -->
+  <div class="card-body">
+      {{ wtf.quick_form(form) }}
+  </div>
+</div>
+{% endblock %}

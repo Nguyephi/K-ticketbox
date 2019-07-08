@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<style>
+  a#rate:link {
+    text-decoration: none;
+    color: #FFCA00;
+
+  }
+
+  a#rate:visited {
+    text-decoration: none;
+    color: #FFCA00;
+
+  }
+
+  a#rate:hover {
+    text-decoration: none;
+    color: #FFCA00;
+
+  }
+
+  a#rate:active {
+    text-decoration: none;
+    color: #FFCA00;
+
+  }
+
+  .rating {
+    overflow: hidden;
+    display: table;
+    font-size: 20px;
+    color: #FFCA00;
+    font-style: normal;
+  }
+
+  .rating-star {
+    padding: 0 5px;
+    margin: 0;
+    cursor: pointer;
+    display: block;
+    float: right;
+
+  }
+
+  .star {
+    color: #FFCA00;
+    position: relative;
+    font-family: FontAwesome;
+    content: '\f006';
+  }
+
+  .rating-star:after {
+    position: relative;
+    font-family: FontAwesome;
+    content: '\f006';
+  }
+
+  .rating-star.checked~.rating-star:after,
+  .rating-star.checked:after {
+    content: '\f005';
+  }
+
+  .rating:hover .rating-star:after {
+    content: '\f006';
+  }
+
+  .rating-star:hover~.rating-star:after,
+  .rating-star:hover:after {
+    content: '\f005' !important;
+  }
+</style>
+
+
+<div class="card shadow mb-5 bg-white rounded">
+  <img class="card-img-top" src={{event.img_url}} alt="Card image cap">
+  <div class="card-body">
+    <h1 class="card-title">{{event.event}}</h1>
+    <!-- rating  -->
+    <form>
+      <label style="color:blue">USER RATING: {{avg_rate}}<i class="fa fa-star" height="3px"></i> ({{count_rater}} votes)
+        {% if not check %}
+        {% else %}
+        ( You have rated {{check.rating}} )
+        {% endif %}
+      </label>
+
+      <div class="rating">
+        <a id="rate" href="../events/rate_event/{{event.id}}/5" class="rating-star" data-rating="5"
+          data-target="difficulty"></a>
+        <a id="rate" href="../events/rate_event/{{event.id}}/4" class="rating-star" data-rating="4"
+          data-target="difficulty"></a>
+        <a id="rate" href="../events/rate_event/{{event.id}}/3" class="rating-star" data-rating="3"
+          data-target="difficulty"></a>
+        <a id="rate" href="../events/rate_event/{{event.id}}/2" class="rating-star" data-rating="2"
+          data-target="difficulty"></a>
+        <a id="rate" href="../events/rate_event/{{event.id}}/1" class="rating-star" data-rating="1"
+          data-target="difficulty"></a>
+
+      </div>
+    </form>
+    <!-- rating  -->
+    <br/>
+    <label style="color:green">ORGANISER: {{ event.users.name }} ( {{avg_user_rating}} <i class="fa fa-star"
+        height="3px"></i> {{count_user_rating}} votes)
+      <div class="row">
+        <div class="col-xs-2" style="display:flex; justify-content: flex-end; padding-right: 0">
+
+          <img class="card-img-top" src={{event.users.avatar_url}} height="50px" alt="Card image cap">
+        </div>
+       <div class="col-xs" style="display:flex; align-items: center">
+          <div class="rating">
+            <a id="rate" href={{url_for('users.voteuser', target_id= event.user_id, rating = 5, event_id = event.id)}}
+              class="rating-star" data-rating="5" data-target="difficulty"></a>
+            <a id="rate" href={{url_for('users.voteuser', target_id= event.user_id, rating = 4, event_id = event.id)}}
+              class="rating-star" data-rating="4" data-target="difficulty"></a>
+            <a id="rate" href={{url_for('users.voteuser', target_id= event.user_id, rating = 3, event_id = event.id)}}
+              class="rating-star" data-rating="3" data-target="difficulty"></a>
+            <a id="rate" href={{url_for('users.voteuser', target_id= event.user_id, rating = 2, event_id = event.id)}}
+              class="rating-star" data-rating="2" data-target="difficulty"></a>
+            <a id="rate" href={{url_for('users.voteuser', target_id= event.user_id, rating = 1, event_id = event.id)}}
+              class="rating-star" data-rating="1" data-target="difficulty"></a>
+          </div>
+        </div>
+      </div>
+    </label>
+
+    <br />
+    <p class="card-text" style="white-space: pre-wrap">{{ event.description}}</p>
+    <p class="card-text"><small class="text-muted">Last updated 1 thousand years ago</small></p>
+  </div>
+
+  {% if remaining_ticket > 0 %}
+  <div class="card-body">
+
+    {% if ticket_price.ticket_price %}
+    <h3 class="card-title">Starting from: {{ "VND {:,.2f}".format(ticket_price.ticket_price) }} ~ Only
+      {{remaining_ticket}} tickets left</h3>
+
+    {% else %}
+    <h3 class="card-title">This event is free to participate</h3>
+
+    {% endif %}
+
+  </div>
+  <a href="../../../events/order/{{event.id}}/step1" type="button" class="btn btn-success">Buy ticket</a>
+  {% elif remaining_ticket == 0  %}
+  <a href="" type="button" class="btn btn-success">Sold out</a>
+
+  {% else %}
+  <a href="" type="button" class="btn btn-success">Free to attend</a>
+
+  {% endif %}
+
+
+</div>
+{% endblock %}

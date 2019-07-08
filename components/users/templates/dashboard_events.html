@@ -1,0 +1,23 @@
+{% extends 'dashboard_base.html' %}
+{% block content %}
+
+<div class="container" style="
+/* box-shadow: 1em;
+border: 1px solid grey;
+border-radius: 20px; */
+min-height: 50vh;
+padding-top:5px;
+padding-left:10px;
+">
+{% if not events[0] %}
+You have not hosted any events yet.
+{% else %}
+{% for event in events %}
+<li><a href="../../events/edit/{{event.id}}">{{event.event}}</a></li>
+{% endfor %}
+{% endif%}
+</div>
+
+
+
+{% endblock %}

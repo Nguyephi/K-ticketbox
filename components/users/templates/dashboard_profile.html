@@ -1,0 +1,42 @@
+{% extends 'dashboard_base.html' %}
+{% block content %}
+
+
+<div class="row">
+  <div class="col-xs-4" style="
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;">
+    <img src={{user.avatar_url}} height="150px">
+    <!-- <img src={{ url_for('static',filename='avatar/avatar01.svg') }} height="150px"> -->
+    <br/>
+    <br/>
+    <a href="../../users/dashboard/updateprofile" class="btn btn-primary">Update Profile</a>
+  
+  </div>
+ 
+  <div class="col-xs-8">
+
+    <p>Name: {{user.name}}</p>
+    <p>loginID: {{user.username}}</p>
+    <p>Gender: {{user.gender}}</p>
+    <p>Email: {{user.email}}</p>
+    <p>Phone: {{user.phone}}</p>
+    <p>Birthday: {{user.birthday}}</p>
+
+    <br />
+    <p>About me: {{user.description}}</p>
+    <p>Address: {{user.address}}</p>
+
+  </div>
+
+</div>
+
+
+
+</div>
+
+
+
+{% endblock %}

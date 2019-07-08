@@ -1,0 +1,35 @@
+{% extends 'dashboard_base.html' %}
+
+
+{% block content %}
+
+<div  style="
+/* box-shadow: 1em;
+border: 1px solid grey;
+border-radius: 20px; */
+min-height: 50vh;
+padding-top:5px;
+padding-left:10px;
+">
+
+
+<br/>
+
+<h3 style="color:red">Confirm delete event: {{event.event}}</h3>
+<br/>
+<a href={{url_for('users.dashboardEvents')}} type="button" class="btn btn-primary">No</a>
+<a href={{url_for('events.confirmdelete_event', event_id = event.id)}} type="button" class="btn btn-danger">Delete event</a>
+<br/>
+<br/>
+
+
+
+
+
+
+
+</div>
+
+
+
+{% endblock %}

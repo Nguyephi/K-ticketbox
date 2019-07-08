@@ -1,0 +1,42 @@
+{% extends 'dashboard_base.html' %}
+{% block content %}
+
+<div style="
+/* box-shadow: 1em;
+border: 1px solid grey;
+border-radius: 20px; */
+min-height: 50vh;
+padding-top:5px;
+padding-left:10px;
+">
+
+{% if not orders %}
+<h4>You have no orders yet</h4>
+
+{% else %}
+
+<p>
+  <b>Orders history</b>
+</p>
+<b>Sorted by: latest</b>
+
+{% for i in range(orders | length) %}
+<h4><a href={{url_for('events.order_complete', event_id = orders[i].event_id , order_id = orders[i].id)}}>
+
+  {{i+1}}. {{orders[i].events.event}} : {{orders[i].tickets.ticket_name}} x {{orders[i].ticket_quantity}}
+</a>
+</h4>
+{% endfor %}
+
+{% endif %}
+
+
+
+
+
+
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="alert alert-danger" role="alert">
+  {{ messages[0] }}
+</div>
+{% endif %}
+{% endwith %}
+<style>
+  .button-holder {
+    display: flex;
+    margin-left: 1rem;
+    justify-content: flex-start;
+    align-items: flex-end;
+    margin-top: auto;
+    margin-bottom: 1rem;
+
+  }
+</style>
+
+<div style="display:flex; justify-content: space-around; flex-wrap: wrap;">
+  {% for i in range(events|length) %}
+  <div class="card shadow mb-5 bg-white rounded"
+    style="min-width:300px; max-width: 450px;  max-height: auto; min-height: 450px; margin-top: 5rem; padding:0;">
+    <img class="card-img-top" src={{events[i].img_url}} alt="Card image cap" height="200px">
+
+    <div class="row">
+      <h4 class="card-title" style="display:flex; flex-wrap: wrap; padding-left:25px; padding-right:20px">
+        {{ events[i].event }}</h4>
+    </div>
+    <div class="row">
+
+      <div class="col-7">
+        <div class="card-body">
+          <p class="card-text"><small class="text-muted"> <b> User rating: {{ events[i].avg_rating }} <i
+                  class="fa fa-star" height="3px"></i>
+                ({{events[i].count_rating}} total votes)
+              </b>
+              <br />
+              Organizer: {{ events[i].users.name }}
+            </small></p>
+
+          <p class="card-text"><small class="text-muted">Location: {{events[i].location}}</small></p>
+
+          <p class="card-text"><small class="text-muted">
+              {% for j in group_tags[i] %}
+              {{j.tags.tag}}
+              {% endfor %}
+
+            </small></p>
+
+
+        </div>
+
+      </div>
+
+      <div class="col-5" style="display:flex; flex-wrap: wrap;justify-content:center">
+        {% if not group[i][0] %}
+        {% else %}
+
+        <p class="card-text" style="width: 100%; text-align: center; margin-right:1rem"><b>
+            {% if group[i][0]-group[i][1] == 0 %}
+            TICKETS SOLD OUT!
+            {% else %}
+            Tickets left: {{group[i][0]-group[i][1]}}
+          </b></p>
+        {%endif%}
+        {% endif %}
+        <div class="card shadow rounded"
+          style="justify-content:center; width: 12rem; height:10rem; text-align: center; margin-top:1rem; margin-right:1rem">
+          <div class="card-header" style="background-color:green; color:white;">
+            {{events[i].start.strftime("%B")}}</div>
+          <div class="card-body" style="margin-top:-1rem">
+            <h4 class="card-title"><b>{{events[i].start.strftime("%d")}}</b></h4>
+            <h5 class="card-title">{{events[i].start.strftime("%A")}}</h5>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+    <div class="button-holder"><a href="{{url_for('events.view_events')}}{{events[i].id}}" class="btn  shadow rounded"
+        style="background-color:rgb(24, 136, 24)">View Event</a>
+    </div>
+  </div>
+
+
+  {% endfor %}
+</div>
+{% endblock %}
